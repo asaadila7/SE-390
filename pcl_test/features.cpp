@@ -29,6 +29,8 @@ PointCloud<Normal>::Ptr estimateNormals() {
 }
 
 void estimateFPFHFeatures() {
+    // https://github.com/PointCloudLibrary/pcl/blob/master/examples/features/example_fast_point_feature_histograms.cpp
+
     PointCloud<PointXYZ>::Ptr cloudGeneratedWolf = readPCDFile("../Wolfhead/generated_wolf.pcd");
     PointCloud<Normal>::Ptr cloudGeneratedWolfNormals = estimateNormals();
 
