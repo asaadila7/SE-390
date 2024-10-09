@@ -1,6 +1,5 @@
+#include "utils.h"
 #include <pcl/io/pcd_io.h>
-#include <pcl/point_types.h>
-#include <pcl/visualization/cloud_viewer.h>
 
 using namespace pcl;
 
@@ -17,6 +16,11 @@ void viewPCDFile(const visualization::PCLVisualizer::Ptr& viewer, const std::str
     viewer->addPointCloud(cloud, single_color, "cloud" + filename);
 }
 
+void viewPointCloud(const visualization::PCLVisualizer::Ptr& viewer, const PointCloud<PointXYZ>::Ptr& cloud, const std::string& id, int r, int g, int b) {
+    visualization::PointCloudColorHandlerCustom<PointXYZ> single_color (cloud,r, g, b);
+    viewer->addPointCloud(cloud, single_color, id);
+}
+
 void listPoints(const PointCloud<PointXYZ>::Ptr& cloud) {
     std::cout << "Loaded "
             << cloud->width * cloud->height
@@ -26,17 +30,4 @@ void listPoints(const PointCloud<PointXYZ>::Ptr& cloud) {
         std::cout << "    " << point.x
                   << " "    << point.y
                   << " "    << point.z << std::endl;
-}
-
-int main() {
-    visualization::PCLVisualizer::Ptr viewer(new visualization::PCLVisualizer ("3D Viewer"));
-    viewer->setBackgroundColor(255, 255, 255);
-
-    viewPCDFile(viewer, "../Wolfhead/generated_wolf.pcd");
-    viewPCDFile(viewer, "../Wolfhead/Theoretical_n_noback.pcd");
-
-    while (!viewer->wasStopped()) {
-        viewer->spinOnce(100);
-    }
-
 }
