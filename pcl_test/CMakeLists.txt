@@ -8,9 +8,12 @@ find_package(PCL 1.2 REQUIRED)
 include_directories(${PCL_INCLUDE_DIRS})
 link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
-add_executable(capstone_point_cloud_matching pcaScaling.cpp
+add_executable(
+        capstone_point_cloud_matching
+#        pcaScaling.cpp
         utils.cpp
         utils.h
+        features.cpp
 )
 target_link_libraries (capstone_point_cloud_matching ${PCL_LIBRARIES})
 
