@@ -1,10 +1,9 @@
+import copy
+
 import open3d as o3d
 
-source = o3d.io.read_point_cloud('wolfhead/generated_wolf.pcd')
-target = o3d.io.read_point_cloud('wolfhead/scaled_theoretical_n.pcd')
-
-# o3d.visualization.draw_geometries([source, target])
-
+source = o3d.io.read_point_cloud('Wolfhead/generated_wolf.pcd')
+target = o3d.io.read_point_cloud('Wolfhead/scaled_theoretical_n.pcd')
 
 def preprocess_point_cloud(pcd, voxel_size):
     print(":: Downsample with a voxel size %.3f." % voxel_size)
@@ -22,12 +21,10 @@ def preprocess_point_cloud(pcd, voxel_size):
         o3d.geometry.KDTreeSearchParamHybrid(radius=radius_feature, max_nn=100))
     return pcd_down, pcd_fpfh
 
-
-voxel_size = 0.05  # means 5cm for this dataset
+voxel_size = 0.01  # means 5cm for this dataset
 
 source_down, source_fpfh = preprocess_point_cloud(source, voxel_size)
 target_down, target_fpfh = preprocess_point_cloud(target, voxel_size)
-
 
 distance_threshold = voxel_size * 1.5
 result = o3d.pipelines.registration.registration_ransac_based_on_feature_matching(
@@ -41,15 +38,14 @@ result = o3d.pipelines.registration.registration_ransac_based_on_feature_matchin
             distance_threshold)
     ], o3d.pipelines.registration.RANSACConvergenceCriteria(100000, 0.999))
 
-
-print (result)
 print(result.transformation)
 
 def draw_registration_result(source, target, transformation):
-    source.paint_uniform_color([1, 0.706, 0])
-    target.paint_uniform_color([0, 0.651, 0.929])
-    source.transform(transformation)
-    o3d.visualization.draw_geometries([source, target])
+    source_temp = copy.deepcopy(source)
+    target_temp = copy.deepcopy(target)
+    source_temp.paint_uniform_color([1, 0.706, 0])
+    target_temp.paint_uniform_color([0, 0.651, 0.929])
+    source_temp.transform(transformation)
+    o3d.visualization.draw_geometries([source_temp, target_temp])
 
-# draw_registration_result(source_down, target_down, result.transformation)
-source.transform(result.transformation)
+draw_registration_result(source, target, result.transformation)

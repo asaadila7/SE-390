@@ -59,11 +59,17 @@ int main() {
     cout << "yScale = " << yScale << endl; // 0.443423
     cout << "zScale = " << zScale << endl; // 0.353402
 
+    double averageScale = (xScale + yScale + zScale) / 3.0;
+    cout << "averageScale = " << averageScale << endl; // 0.353402
+
     for (int i = 0; i < orientedTheoreticalN->points.size(); i++)
     {
-        orientedTheoreticalN->points[i].x = orientedTheoreticalN->points[i].x * xScale;
-        orientedTheoreticalN->points[i].y = orientedTheoreticalN->points[i].y * yScale;
-        orientedTheoreticalN->points[i].z = orientedTheoreticalN->points[i].z * zScale;
+        // orientedTheoreticalN->points[i].x = orientedTheoreticalN->points[i].x * xScale;
+        // orientedTheoreticalN->points[i].y = orientedTheoreticalN->points[i].y * yScale;
+        // orientedTheoreticalN->points[i].z = orientedTheoreticalN->points[i].z * zScale;
+        orientedTheoreticalN->points[i].x = orientedTheoreticalN->points[i].x * averageScale;
+        orientedTheoreticalN->points[i].y = orientedTheoreticalN->points[i].y * averageScale;
+        orientedTheoreticalN->points[i].z = orientedTheoreticalN->points[i].z * averageScale;
     }
 
     // pcl::transformPointCloud(*orientedSample, *cloudTheoreticalN, sampleTransform);
@@ -72,9 +78,9 @@ int main() {
     viewPointCloud(boundingBoxViewer, cloudGeneratedWolf, "wolf", 4, 44, 99); // blue
     viewPointCloud(boundingBoxViewer, cloudTheoreticalN, "theoretical_n", 4, 44, 99); // blue
     viewPointCloud(boundingBoxViewer, orientedTheoreticalN, "scaled + oriented theoretical_n",23, 99, 4 ); // green
-    io::savePCDFile("../scaled_theoretical_n.pcd", *orientedTheoreticalN);
+    io::savePCDFile("../avg_scaled_theoretical_n.pcd", *orientedTheoreticalN);
     // viewPointCloud(boundingBoxViewer, orientedGeneratedWolf, "oriented theoretical_n", 99, 4, 4); // red
-//    while (!boundingBoxViewer->wasStopped()) {
-//        boundingBoxViewer->spinOnce(100);
-//    }
+   while (!boundingBoxViewer->wasStopped()) {
+       boundingBoxViewer->spinOnce(100);
+   }
 }
