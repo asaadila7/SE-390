@@ -20,11 +20,11 @@ PointCloud<Normal>::Ptr estimateNormals() {
     PointCloud<Normal>::Ptr cloudGeneratedWolfNormals (new PointCloud<Normal>);
     ne.compute(*cloudGeneratedWolfNormals);
 
-    // visualization::PCLVisualizer::Ptr viewer(new visualization::PCLVisualizer ("3D Viewer"));
-    // viewer->addPointCloudNormals<PointXYZ, Normal>(cloudGeneratedWolf, cloudGeneratedWolfNormals);
-    // while (!viewer->wasStopped()) {
-    //     viewer->spinOnce(100);
-    // }
+    visualization::PCLVisualizer::Ptr viewer(new visualization::PCLVisualizer ("3D Viewer"));
+    viewer->addPointCloudNormals<PointXYZ, Normal>(cloudGeneratedWolf, cloudGeneratedWolfNormals);
+    while (!viewer->wasStopped()) {
+        viewer->spinOnce(100);
+    }
     return cloudGeneratedWolfNormals;
 }
 
@@ -53,6 +53,6 @@ void estimateFPFHFeatures() {
 }
 
 int main() {
-    // estimateNormals();
+    estimateNormals();
     estimateFPFHFeatures();
 }

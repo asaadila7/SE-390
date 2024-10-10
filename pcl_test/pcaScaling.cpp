@@ -72,8 +72,9 @@ int main() {
     viewPointCloud(boundingBoxViewer, cloudGeneratedWolf, "wolf", 4, 44, 99); // blue
     viewPointCloud(boundingBoxViewer, cloudTheoreticalN, "theoretical_n", 4, 44, 99); // blue
     viewPointCloud(boundingBoxViewer, orientedTheoreticalN, "scaled + oriented theoretical_n",23, 99, 4 ); // green
+    io::savePCDFile("../scaled_theoretical_n.pcd", *orientedTheoreticalN);
     // viewPointCloud(boundingBoxViewer, orientedGeneratedWolf, "oriented theoretical_n", 99, 4, 4); // red
-    while (!boundingBoxViewer->wasStopped()) {
-        boundingBoxViewer->spinOnce(100);
-    }
+//    while (!boundingBoxViewer->wasStopped()) {
+//        boundingBoxViewer->spinOnce(100);
+//    }
 }

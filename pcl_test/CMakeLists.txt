@@ -10,10 +10,10 @@ link_directories(${PCL_LIBRARY_DIRS})
 add_definitions(${PCL_DEFINITIONS})
 add_executable(
         capstone_point_cloud_matching
-#        pcaScaling.cpp
+        pcaScaling.cpp
         utils.cpp
         utils.h
-        features.cpp
+#        features.cpp
 )
 target_link_libraries (capstone_point_cloud_matching ${PCL_LIBRARIES})
 
