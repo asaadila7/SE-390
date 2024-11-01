@@ -47,9 +47,14 @@ def init_conds(sim_len, s):
         for _ in range(int(sim_len / s)):
             init_heights_row.append(
                 (
-                    init_heights_row[-1]
-                    if len(init_heights_row) != 0
-                    else init_heights[-1][0] if len(init_heights) != 0 else 0.5
+                    (init_heights[-1][len(init_heights_row) - 1] + init_heights_row[-1])
+                    / 2
+                    if len(init_heights) != 0 and len(init_heights_row) != 0
+                    else (
+                        init_heights_row[-1]
+                        if len(init_heights_row) != 0
+                        else init_heights[-1][0] if len(init_heights) != 0 else 0.5
+                    )
                 )
                 + (get_exp_rand_var(0.0001) * np.random.choice([-1, 1]))
             )

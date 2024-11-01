@@ -58,6 +58,49 @@ total_time = 5  # s
 import sim_2d
 
 init_heights = sim_2d.init_conds(sim_len, s)
+x_vals, y_vals = np.mgrid[0:sim_len:s, 0:sim_len:s]
+
+# ax = plt.figure().add_subplot(projection="3d")
+# ax.plot_surface(x_vals, y_vals, init_heights)
+# plt.show()
+
+print("made it here!")
+
 evolved_heights = sim_2d.sim(s, c, delta_t, total_time, init_heights)
 
-# min_y, max_y = np.min(evolved_heights), np.max(evolved_heights)
+print("made it here!")
+
+min_z, max_z = np.min(evolved_heights), np.max(evolved_heights)
+
+out = None
+fig = plt.figure()
+
+for index, heights in enumerate(evolved_heights):
+    ax = fig.add_subplot(111)
+    ax.plot_surface(x_vals, y_vals, init_heights)
+    ax.set_zlim(min_z, max_z)
+    fig.canvas.draw()
+
+    # Now we can save it to a numpy array.
+    data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+    data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+
+    ax.remove()
+
+    if out is None:
+        out = cv2.VideoWriter(
+            "output.mp4",
+            cv2.VideoWriter_fourcc(*"XVID"),
+            20.0,
+            (data.shape[1], data.shape[0]),
+        )
+
+    out.write(data)
+
+    cv2.imshow("img", data)
+    if cv2.waitKey(1) == ord("q"):
+        break
+
+out.release()
+cv2.destroyAllWindows()
+plt.close(fig)
