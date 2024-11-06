@@ -12,29 +12,15 @@ def sim(s, c, delta_t, total_time, init_heights):
         raise RuntimeError("delta_t * c >= s")
 
     k = (c**2) / (s**2)
-    heights = [init_heights]
-    velocities = [0] * len(init_heights)
+    heights = [np.array(init_heights)]
+    velocities = np.zeros(len(init_heights))
 
     for _ in range(int(total_time / delta_t)):
-        accelerations = [
-            k
-            * (
-                heights[-1][max(0, i - 1)]
-                + heights[-1][min(len(heights[-1]) - 1, i + 1)]
-                - 2 * heights[-1][i]
-            )
-            for i in range(len(heights[-1]))
-        ]
-        velocities = [
-            velocity + delta_t * acceleration
-            for velocity, acceleration in zip(velocities, accelerations)
-        ]
-        heights.append(
-            [
-                height + delta_t * velocity
-                for height, velocity in zip(heights[-1], velocities)
-            ]
-        )
+        arr1 = np.concatenate(([heights[-1][0]], heights[-1][:-1]))
+        arr2 = np.concatenate((heights[-1][1:], [heights[-1][-1]]))
+        accelerations = k * (arr1 + arr2 - (2 * heights[-1]))
+        velocities += delta_t * accelerations
+        heights.append(heights[-1] + delta_t * velocities)
 
     return heights
 

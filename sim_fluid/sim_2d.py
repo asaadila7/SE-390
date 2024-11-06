@@ -12,23 +12,20 @@ def sim(s, c, delta_t, total_time, init_heights):
     velocities = np.zeros(heights[0].shape)
 
     for _ in range(int(total_time / delta_t)):
-        accelerations = np.array(
-            [
-                [
-                    k
-                    * (
-                        heights[-1][max(0, i - 1)][j]
-                        + heights[-1][i][max(0, j - 1)]
-                        + heights[-1][min(i + 1, len(heights[-1] - 1))][j]
-                        + heights[-1][i][min(j + 1, len(heights[-1][0]) - 1)]
-                        - 4 * heights[-1][i][j]
-                    )
-                    for j in range(heights[0].shape[1])
-                ]
-                for i in range(heights[0].shape[1])
-            ]
+        arr1 = np.concatenate(
+            (np.expand_dims(heights[-1][0, :], 0), heights[-1][:-1, :]), axis=0
         )
-        velocities = velocities + delta_t * np.array(accelerations)
+        arr2 = np.concatenate(
+            (heights[-1][1:, :], np.expand_dims(heights[-1][-1, :], 0)), axis=0
+        )
+        arr3 = np.concatenate(
+            (np.expand_dims(heights[-1][:, 0], 1), heights[-1][:, :-1]), axis=1
+        )
+        arr4 = np.concatenate(
+            (heights[-1][:, 1:], np.expand_dims(heights[-1][:, -1], 1)), axis=1
+        )
+        accelerations = k * (arr1 + arr2 + arr3 + arr4 - (4 * heights[-1]))
+        velocities += delta_t * accelerations
         heights.append(heights[-1] + delta_t * velocities)
 
     return heights
@@ -36,8 +33,7 @@ def sim(s, c, delta_t, total_time, init_heights):
 
 def smooth(y, window_size):
     box = np.ones(window_size) / (window_size[0] * window_size[1])
-    y_smooth = cv2.filter2D(np.array(y), -1, box)
-    return y_smooth
+    return cv2.filter2D(np.array(y), -1, box)
 
 
 def init_conds(sim_len, s):
