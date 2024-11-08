@@ -43,3 +43,53 @@ def init_conds(sim_len, s):
     init_heights /= np.sum(init_heights) / len(init_heights)
 
     return init_heights
+
+
+if __name__ == "__main__":
+    import matplotlib.pyplot as plt
+    import cv2
+    import json
+
+    with open("config.json") as f:
+        config = json.load(f)
+
+    x_vals = np.linspace(0, config["sim_len"], int(config["sim_len"] / config["s"]))
+    init_heights = init_conds(config["sim_len"], config["s"])
+    evolved_heights = sim(
+        config["s"], config["c"], config["delta_t"], config["total_time"], init_heights
+    )
+
+    min_y, max_y = np.min(evolved_heights), np.max(evolved_heights)
+
+    out = None
+    fig = plt.figure()
+
+    for index, heights in enumerate(evolved_heights):
+        ax = fig.add_subplot(111)
+        ax.plot(x_vals, heights)
+        ax.set_ylim(min_y, max_y)
+        fig.canvas.draw()
+
+        # Now we can save it to a numpy array.
+        data = np.frombuffer(fig.canvas.tostring_rgb(), dtype=np.uint8)
+        data = data.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+
+        ax.remove()
+
+        if out is None:
+            out = cv2.VideoWriter(
+                "output.mp4",
+                cv2.VideoWriter_fourcc(*"XVID"),
+                20.0,
+                (data.shape[1], data.shape[0]),
+            )
+
+        out.write(data)
+
+        cv2.imshow("img", data)
+        if cv2.waitKey(1) == ord("q"):
+            break
+
+    out.release()
+    cv2.destroyAllWindows()
+    plt.close(fig)

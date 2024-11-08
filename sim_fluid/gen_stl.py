@@ -1,19 +1,5 @@
 # https://gist.github.com/GrantTrebbin/5382bc3c815a933dbd22d3a1881fa334
 
-# stl-surface.py
-
-# Generate a 3D model based on a 2D equation
-
-# The model will be rectangular with a flat base. The top surface is based on
-# a provided equation in "surface_function". The file name can be set with the
-# output_filename variable. The x and y width of the model and the grid spacing
-# is defined by the following parameters.
-
-# x_spacing
-# y_spacing
-# x_number_of_points
-# y_number_of_points
-
 # There may be a warning that model isn't closed. Most likely this is an error
 # caused by the way numpy-stl tests the model. This usually only happens on
 # models with a large number of faces. Ignore this warning but check the model
@@ -21,7 +7,6 @@
 
 import numpy as np
 from stl import mesh
-import math
 from typing import NamedTuple, List
 
 
@@ -32,28 +17,14 @@ class Vertex(NamedTuple):
     z: float
 
 
-def gen(heights, x_vals, y_vals, outfile):
-
-    # x_spacing = 1
-    # x_number_of_points = 101
-
-    # y_spacing = 1
-    # y_number_of_points = 101
+def create_mesh(heights, x_vals, y_vals, outfile, scale_factor=1):
 
     y_number_of_points, x_number_of_points = heights.shape
-
-    # print("x size = " + str(x_spacing * (x_number_of_points - 1)))
-    # print("y size = " + str(y_spacing * (y_number_of_points - 1)))
-
-    # number_of_top_coordinates = x_number_of_points * y_number_of_points
     number_of_top_faces = (x_number_of_points - 1) * (y_number_of_points - 1) * 2
-    # print("number of coordinates in the upper surface = " + str(number_of_top_coordinates))
-    # print("number of faces in the upper surface = " + str(number_of_top_faces))
 
     total_number_of_faces = number_of_top_faces * 2 + 4 * (
         y_number_of_points + x_number_of_points - 2
     )
-    # print("total number of faces in the model = " + str(total_number_of_faces))
 
     # Storage for vertex coordinates using the x and y index of the coordinates
     top_vertices = dict()
@@ -88,21 +59,6 @@ def gen(heights, x_vals, y_vals, outfile):
     bottom_faces: List[tuple or None] = [None] * (
         (x_number_of_points - 1) * (y_number_of_points - 1) * 2
     )
-
-    # Every vertex in the grid (apart from ones on the top and right sides)\
-    # correspond to 2 triangular faces. For example, in a grid with spacing of 1,
-    # the coordinate of (x, y) would correspond to two triangles.  The order of the
-    # coordinates in each face is important as it defines the outward facing
-    # direction of the face based on the right hand rule.
-
-    # (x, y), (x + 1, y), (x + 1, y + 1)
-    # (x, y), (x + 1, y + 1), (x, y + 1)
-
-    # *---*---*
-    # | / | / |
-    # *---*---
-    # | / | / |
-    # *---*---*
 
     counter = 0
     for y_index in range(y_number_of_points - 1):
@@ -205,14 +161,12 @@ def gen(heights, x_vals, y_vals, outfile):
     for index, face in enumerate(all_faces):
         for vertex_index in range(3):
             model.vectors[index][vertex_index] = np.array(
-                [face[vertex_index].x, face[vertex_index].y, face[vertex_index].z]
+                [
+                    face[vertex_index].x * scale_factor,
+                    face[vertex_index].y * scale_factor,
+                    face[vertex_index].z * scale_factor,
+                ]
             )
-
-    # Print model properties
-    # volume, cog, inertia = model.get_mass_properties()
-    # print("Volume of the model = " + str(volume))
-    # print("Centre of gravity of the model [x, y, z] = " + str(cog))
-    # print("Mass moment of inertia matrix at centre of gravity =\n" + str(inertia))
 
     # Save the model
     model.save(outfile)
