@@ -52,11 +52,13 @@ def init_conds():
     return u, w
 
 def evolve_u(i, k, prev_u, prev_height):
-    # print(prev_u[i][k])
     if k == 0 or k >= dimension - 1:
         return 0 # boundary condition: solid wall
     h_left = prev_height[i][k-1]
     h_right = prev_height[i][k]
+    # mirroring boundary condition
+    # h_left = prev_height[i][max(0, k - 1)]
+    # h_right = prev_height[i][min(dimension - 1, k)]
     u = prev_u[i][k] - dt * g * (h_right - h_left) / dx
     return u
 
@@ -65,6 +67,9 @@ def evolve_w(i, k, prev_w, prev_height):
         return 0 # boundary condition: solid wall
     h_top = prev_height[i-1][k]
     h_bottom = prev_height[i][k]
+    # mirroring boundary condition
+    # h_top = prev_height[max(0, i - 1)][k]
+    # h_bottom = prev_height[min(dimension - 1, i)][k]
     w = prev_w[i][k] - dt * g * (h_bottom - h_top) / dx
     return w
 
@@ -75,27 +80,26 @@ def evolve_d(i, k, prev_d, u, w):
 def evolve_step(prev_d, u, w):
     u_A = np.empty_like(u)
     w_A = np.empty_like(w)
+    d_A = np.empty_like(prev_d)
     for i in range(dimension):
         for k in range(dimension+1):
-            u_A[i][k] = advection.advect_u(u, u, w, i, k, dx, dt)
+            u_A[i][k] = advection.advect(u, u, w, i, k, dx, dt, 0, 0, advection.avg_velocity_u)
 
     for i in range(dimension+1):
         for k in range(dimension):
-            w_A[i][k] = advection.advect_w(w, u, w, i, k, dx, dt)
+            w_A[i][k] = advection.advect(w, u, w, i, k, dx, dt, 0, 0, advection.avg_velocity_w)
+
+    for i in range(dimension):
+        for k in range(dimension):
+            d_A[i][k] = advection.advect(prev_d, u, w, i, k, dx, dt, 0.5, 0.5, advection.avg_velocity_d)
 
     for i in range(dimension):
         for k in range(dimension+1):
             u[i][k] = evolve_u(i, k, u_A, prev_d)
-    # print(u)
+
     for i in range(dimension+1):
         for k in range(dimension):
             w[i][k] = evolve_w(i, k, w_A, prev_d)
-
-    d_A = np.empty_like(prev_d)
-    for i in range(dimension):
-        for k in range(dimension):
-            d_A[i][k] = advection.advect_d(prev_d, u, w, i, k, dx, dt)
-    # print(d_A)
 
     new_d = np.empty_like(prev_d)
     for i in range(dimension):
@@ -126,7 +130,6 @@ def animate(i):
     ax.set_zlim(min_height, max_height)
     ax.plot_surface(x, y, sim_heights[i], cmap=cm.coolwarm)
     ax.set_title(f'total volume: {round(np.sum(sim_heights[i]), 2)}')
-    # ax.text(0.9, 0.9, 0.9, s=f'total height: {np.sum(sim_heights)}', verticalalignment='center', horizontalalignment='right')
 
 plot_animation = animation.FuncAnimation(fig, animate, frames=int(T / dt), interval=10)
 
