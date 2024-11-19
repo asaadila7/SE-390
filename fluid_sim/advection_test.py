@@ -9,7 +9,7 @@ length = 5
 dimension = int(length / dx)
 
 dt = 0.001
-T = 1
+T = 0.5
 
 def init_conds():
     heights = np.empty((dimension, dimension))
@@ -17,18 +17,23 @@ def init_conds():
     # horizontal
     # for i in range(dimension):
     #     for j in range(dimension):
-    #         heights[i][j] = 5 if j < dimension // 2 else 0
+    #         heights[i][j] = 5. if j < dimension // 2 else 0
     #
-    # u = np.full((dimension, dimension + 1), 5)
+    # u = np.full((dimension, dimension + 1), 5.)
     # w = np.full((dimension + 1, dimension), 0)
 
     # diagonal
     for i in range(dimension):
         for j in range(dimension):
-            heights[i][j] = 5 if j < i else 0
+            heights[i][j] = 5. if j < i else 0
 
-    u = np.full((dimension, dimension + 1), 10)
-    w = np.full((dimension + 1, dimension), 10)
+    # spike
+    for i in range(dimension):
+        for j in range(dimension):
+            heights[i][j] = max(0, -abs(j - dimension / 2.) + dimension / 2. - 20)
+
+    u = np.full((dimension, dimension + 1), 10.)
+    w = np.full((dimension + 1, dimension), 10.)
 
     return u, w, heights
 

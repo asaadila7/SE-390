@@ -20,6 +20,47 @@ def avg_velocity_w(u, w, i, k):
     w_i = w[i][k]
     return u_i, w_i
 
+def linear_interpolate(s, q_0, q_1):
+    return (1-s) * q_0 + s * q_1
+
+def linear_advect(q, j_x, j1_x, a_x, j_y, j1_y, a_y):
+    j_y = max(0, min(len(q) - 1, j_y))
+    j1_y = max(0, min(len(q) - 1, j1_y))
+    j_x = max(0, min(len(q[0]) - 1, j_x))
+    j1_x = max(0, min(len(q[0]) - 1, j1_x))
+
+    q_p_yj = linear_interpolate(a_x, q[j_y][j_x], q[j_y][j1_x])
+    q_p_yj1 = linear_interpolate(a_x, q[j1_y][j_x], q[j1_y][j1_x])
+    q_p = linear_interpolate(a_y, q_p_yj, q_p_yj1)
+
+    return q_p
+
+def cubic_interpolate(s, q_neg_1, q_0, q_1, q_2):
+    w_neg_1 = -1/3 * s + 1/2 * s**2 - 1/6 * s**3
+    w_0 = 1 - s**2 + 1/2 * (s**3 - s)
+    w_1 = s + 1/2 * (s**2 - s**3)
+    w_2 = 1/6 * (s**3 - s)
+    return w_neg_1 * q_neg_1 + w_0 * q_0 + w_1 * q_1 + w_2 * q_2
+
+def cubic_advect(q, j_x, j1_x, a_x, j_y, j1_y, a_y):
+    j_y = max(0, min(len(q) - 1, j_y))
+    j1_y = max(0, min(len(q) - 1, j1_y))
+    j2_y = max(0, min(len(q) - 1, j1_y+1))
+    j_neg1_y = max(0, min(len(q) - 1, j_y-1))
+
+    j_x = max(0, min(len(q[0]) - 1, j_x))
+    j1_x = max(0, min(len(q[0]) - 1, j1_x))
+    j2_x = max(0, min(len(q[0]) - 1, j1_x + 1))
+    j_neg1_x = max(0, min(len(q[0]) - 1, j_x - 1))
+
+    q_p_yj_neg1 = cubic_interpolate(a_x, q[j_neg1_y][j_neg1_x], q[j_neg1_y][j_x], q[j_neg1_y][j1_x], q[j_neg1_y][j2_x])
+    q_p_yj = cubic_interpolate(a_x, q[j_y][j_neg1_x], q[j_y][j_x], q[j_y][j1_x], q[j_y][j2_x])
+    q_p_yj1 = cubic_interpolate(a_x, q[j1_y][j_neg1_x], q[j1_y][j_x], q[j1_y][j1_x], q[j1_y][j2_x])
+    q_p_yj2 = cubic_interpolate(a_x, q[j2_y][j_neg1_x], q[j2_y][j_x], q[j2_y][j1_x], q[j2_y][j2_x])
+    q_p = cubic_interpolate(a_y, q_p_yj_neg1, q_p_yj, q_p_yj1, q_p_yj2)
+
+    return q_p
+
 def advect(q, u, w, i, k, dx, dt, trans_x, trans_y, get_average_velocity):
     x_i = dx * (k + trans_x)
     y_i = dx * (i + trans_y)
@@ -38,12 +79,5 @@ def advect(q, u, w, i, k, dx, dt, trans_x, trans_y, get_average_velocity):
     j1_y = math.ceil(y_p / dx - trans_y)
     a_y = (y_p - y_j) / dx
 
-    j_y = max(0, min(len(q) - 1, j_y))
-    j1_y = max(0, min(len(q) - 1, j1_y))
-    j_x = max(0, min(len(q[0]) - 1, j_x))
-    j1_x = max(0, min(len(q[0]) - 1, j1_x))
-
-    q_p_yj = (1 - a_x) * q[j_y][j_x] + a_x * q[j_y][j1_x]
-    q_p_yj1 = (1 - a_x) * q[j1_y][j_x] + a_x * q[j1_y][j1_x]
-    q_p = (1 - a_y) * q_p_yj + a_y * q_p_yj1
-    return q_p
+    # return linear_advect(q, j_x, j1_x, a_x, j_y, j1_y, a_y)
+    return cubic_advect(q, j_x, j1_x, a_x, j_y, j1_y, a_y)
