@@ -83,11 +83,11 @@ def evolve_step(prev_d, u, w):
     d_A = np.empty_like(prev_d)
     for i in range(dimension):
         for k in range(dimension+1):
-            u_A[i][k] = advection.advect(u, u, w, i, k, dx, dt, 0, 0, advection.avg_velocity_u)
+            u_A[i][k] = advection.advect(u, u, w, i, k, dx, dt, 0, 0.5, advection.avg_velocity_u)
 
     for i in range(dimension+1):
         for k in range(dimension):
-            w_A[i][k] = advection.advect(w, u, w, i, k, dx, dt, 0, 0, advection.avg_velocity_w)
+            w_A[i][k] = advection.advect(w, u, w, i, k, dx, dt, 0.5, 0, advection.avg_velocity_w)
 
     for i in range(dimension):
         for k in range(dimension):

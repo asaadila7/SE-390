@@ -9,14 +9,18 @@ def avg_velocity_d(u, w, i, k):
 # calculate average velocity at u_i,k
 def avg_velocity_u(u, w, i, k):
     u_i = u[i][k]
-    w_i = (w[i + 1][min(k, len(w[0]) - 1)] + w[i + 1][min(k + 1, len(w[0]) - 1)]
-           + w[i][min(k, len(w[0]) - 1)] + w[i][min(k + 1, len(w[0]) - 1)]) / 4
+    w_i = (w[i][max(0, k-1)] + w[i+1][max(0, k-1)] + w[i][min(k, len(w[0]) - 1)] + w[i+1][min(k, len(w[0]) - 1)]) / 4
+
+    # w_i = (w[i + 1][min(k, len(w[0]) - 1)] + w[i + 1][min(k + 1, len(w[0]) - 1)]
+    #        + w[i][min(k, len(w[0]) - 1)] + w[i][min(k + 1, len(w[0]) - 1)]) / 4
     return u_i, w_i
 
 # calculate average velocity at w_i,k
 def avg_velocity_w(u, w, i, k):
-    u_i = (u[min(i, len(u) - 1)][k + 1] + u[min(i, len(u) - 1)][k] + u[min(i + 1, len(u) - 1)][k + 1] +
-           u[min(i + 1, len(u) - 1)][k]) / 4
+    # u_i = (u[min(i, len(u) - 1)][k + 1] + u[min(i, len(u) - 1)][k] + u[min(i + 1, len(u) - 1)][k + 1] +
+    #        u[min(i + 1, len(u) - 1)][k]) / 4
+
+    u_i = (u[max(0, i-1)][k] + u[max(0, i-1)][k+1] + u[min(i, len(u) - 1)][k] + u[min(i, len(u) - 1)][k+1]) / 4
     w_i = w[i][k]
     return u_i, w_i
 
