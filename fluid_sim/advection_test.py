@@ -20,14 +20,14 @@ def init_conds():
     #         heights[i][j] = 5. if j < dimension // 2 else 0
 
     # diagonal
-    # for i in range(dimension):
-    #     for j in range(dimension):
-    #         heights[i][j] = 5. if j < i else 0
-
-    # spike
     for i in range(dimension):
         for j in range(dimension):
-            heights[i][j] = max(0, -abs(j - dimension / 2.) + dimension / 2. - 20)
+            heights[i][j] = 5. if j > dimension - i else 0
+
+    # spike
+    # for i in range(dimension):
+    #     for j in range(dimension):
+    #         heights[i][j] = max(0, -abs(j - dimension / 2.) + dimension / 2. - 20)
 
     u = np.full((dimension, dimension + 1), 10.)
     w = np.full((dimension + 1, dimension), 10.)
