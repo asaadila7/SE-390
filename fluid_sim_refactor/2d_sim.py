@@ -12,19 +12,19 @@ dimension = int(length / dx)
 g = 9.81 # gravity
 
 dt = 0.001
-T = 0.5
+T = 2
 
 # test against 1D sim
 
-length = 5
-dimension = 25
-dx = length / dimension
-
-g = 0.2
-
-dt = 0.1
-steps = 250
-T = dt * steps
+# length = 5
+# dimension = 25
+# dx = length / dimension
+#
+# g = 0.2
+#
+# dt = 0.1
+# steps = 250
+# T = dt * steps
 
 def init_1D_sin():
     d = np.empty((dimension, dimension), dtype=np.float64)
@@ -68,7 +68,7 @@ def init_height():
 def init_conds():
     u = np.zeros((dimension + 1, dimension), dtype=np.float64)
     v = np.zeros((dimension, dimension + 1), dtype=np.float64)
-    return u, v, init_1D_sin()
+    return u, v, init_height()
 
 def evolve_u(i, j, u_A, d_A):
     if i == 0 or i > dimension - 1:
@@ -130,8 +130,6 @@ fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 min_height = 0
 max_height = sim_heights.max() * 1.1
-# testing against 1D
-max_height = 5
 ax.set_zlim(min_height, max_height)
 
 def animate(i):
@@ -140,6 +138,6 @@ def animate(i):
     ax.plot_surface(x, y, sim_heights[i], cmap=cm.coolwarm)
     ax.set_title(f'total volume: {round(np.sum(sim_heights[i]), 2)}')
 
-plot_animation = animation.FuncAnimation(fig, animate, frames=int(T / dt), interval=100)
+plot_animation = animation.FuncAnimation(fig, animate, frames=int(T / dt), interval=20)
 
 plt.show()

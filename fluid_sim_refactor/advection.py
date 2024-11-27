@@ -82,5 +82,5 @@ def advect(q, u, v, i, j, dx, dt, trans_x, trans_y, max_x, max_y, avg_velocity):
     n_x, a_x = find_nearest_smaller(x_prev, dx, trans_x, max_x)
     n_y, a_y = find_nearest_smaller(y_prev, dx, trans_y, max_y)
 
-    return linear_advect(q, n_x, n_y, a_x, a_y)
-    # return cubic_advect(q, n_x, n_y, a_x, a_y)
+    # return linear_advect(q, n_x, n_y, a_x, a_y)
+    return cubic_advect(q, n_x, n_y, a_x, a_y)
