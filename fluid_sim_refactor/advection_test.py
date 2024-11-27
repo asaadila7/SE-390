@@ -41,15 +41,15 @@ def evolve_step(prev_d, u, v):
 
     for i in range(len(u_A)):
         for j in range(len(u_A[i])):
-            u_A[i][j] = advection.advect(u, u, v, i, j, dx, dt, 0, 0.5, dimension, advection.avg_velocity_u)
+            u_A[i][j] = advection.advect(u, u, v, i, j, dx, dt, 0, 0.5, dimension+1, dimension, advection.avg_velocity_u)
 
     for i in range(len(v_A)):
         for j in range(len(v_A[i])):
-            v_A[i][j] = advection.advect(v, u, v, i, j, dx, dt, 0.5, 0, dimension, advection.avg_velocity_v)
+            v_A[i][j] = advection.advect(v, u, v, i, j, dx, dt, 0.5, 0, dimension, dimension+1, advection.avg_velocity_v)
 
     for i in range(len(d_A)):
         for j in range(len(d_A[i])):
-            d_A[i][j] = advection.advect(prev_d, u, v, i, j, dx, dt, 0.5, 0.5, dimension, advection.avg_velocity_d)
+            d_A[i][j] = advection.advect(prev_d, u, v, i, j, dx, dt, 0.5, 0.5, dimension, dimension, advection.avg_velocity_d)
     return u_A, v_A, d_A
 
 def sim():

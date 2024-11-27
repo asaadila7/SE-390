@@ -70,7 +70,7 @@ def cubic_advect(q, n_x, n_y, a_x, a_y):
     q_n_y_2 = cubic_interpolate(a_x, q[n_x_neg_1][n_y_2], q[n_x][n_y_2], q[n_x_1][n_y_2], q[n_x_2][n_y_2])
     return cubic_interpolate(a_y, q_n_y_neg_1, q_n_y, q_n_y_1, q_n_y_2)
 
-def advect(q, u, v, i, j, dx, dt, trans_x, trans_y, dimension, avg_velocity):
+def advect(q, u, v, i, j, dx, dt, trans_x, trans_y, max_x, max_y, avg_velocity):
     x_cur = get_pos(i, dx, trans_x)
     y_cur = get_pos(j, dx, trans_y)
 
@@ -79,8 +79,8 @@ def advect(q, u, v, i, j, dx, dt, trans_x, trans_y, dimension, avg_velocity):
     x_prev = x_cur - dt * u_avg
     y_prev = y_cur - dt * v_avg
 
-    n_x, a_x = find_nearest_smaller(x_prev, dx, trans_x, dimension)
-    n_y, a_y = find_nearest_smaller(y_prev, dx, trans_y, dimension)
+    n_x, a_x = find_nearest_smaller(x_prev, dx, trans_x, max_x)
+    n_y, a_y = find_nearest_smaller(y_prev, dx, trans_y, max_y)
 
-    # return linear_advect(q, n_x, n_y, a_x, a_y)
-    return cubic_advect(q, n_x, n_y, a_x, a_y)
+    return linear_advect(q, n_x, n_y, a_x, a_y)
+    # return cubic_advect(q, n_x, n_y, a_x, a_y)
